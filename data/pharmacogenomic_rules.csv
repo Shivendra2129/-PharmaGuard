@@ -1,0 +1,49 @@
+gene,drug,diplotype,phenotype,risk_label,severity,cpic_recommendation,alternative_drugs,evidence_level
+CYP2D6,CODEINE,*4/*4,PM,Ineffective,high,Avoid codeine. Use non-CYP2D6-metabolized opioids.,morphine|oxycodone,A
+CYP2D6,CODEINE,*1/*4,IM,Adjust Dosage,moderate,Use lower dose with close monitoring. Consider alternative.,tramadol|morphine,A
+CYP2D6,CODEINE,*1/*1,NM,Safe,none,Standard dose codeine. No adjustment needed.,none,A
+CYP2D6,CODEINE,*1/*2,NM,Safe,none,Standard dose codeine. No adjustment needed.,none,A
+CYP2D6,CODEINE,*1/*1x2,RM,Adjust Dosage,moderate,Increased conversion to morphine. Monitor for toxicity.,tramadol|morphine,A
+CYP2D6,CODEINE,*1/*1xN,URM,Toxic,critical,Avoid codeine. Ultrarapid metabolism causes toxic morphine levels.,morphine|oxycodone,A
+CYP2D6,CODEINE,*2/*4,IM,Adjust Dosage,moderate,Use lower dose with close monitoring.,tramadol|morphine,B
+CYP2D6,CODEINE,*3/*4,PM,Ineffective,high,Avoid codeine. Use non-CYP2D6-metabolized opioids.,morphine|oxycodone,A
+CYP2D6,CODEINE,*5/*5,PM,Ineffective,high,Avoid codeine due to gene deletion phenotype.,morphine|oxycodone,A
+CYP2C19,CLOPIDOGREL,*2/*2,PM,Ineffective,high,Avoid clopidogrel. Consider prasugrel or ticagrelor.,prasugrel|ticagrelor,A
+CYP2C19,CLOPIDOGREL,*1/*2,IM,Adjust Dosage,moderate,Consider alternative antiplatelet therapy or higher dose.,prasugrel|ticagrelor,A
+CYP2C19,CLOPIDOGREL,*1/*1,NM,Safe,none,Standard clopidogrel dose. No adjustment needed.,none,A
+CYP2C19,CLOPIDOGREL,*1/*17,RM,Safe,low,Standard or slightly reduced dose may be appropriate.,none,B
+CYP2C19,CLOPIDOGREL,*17/*17,URM,Adjust Dosage,low,Ultrarapid metabolizer; monitor for bleeding risk.,none,B
+CYP2C19,CLOPIDOGREL,*2/*3,PM,Ineffective,high,Avoid clopidogrel. Use prasugrel or ticagrelor.,prasugrel|ticagrelor,A
+CYP2C19,CLOPIDOGREL,*3/*3,PM,Ineffective,high,Avoid clopidogrel. Use prasugrel or ticagrelor.,prasugrel|ticagrelor,A
+CYP2C9,WARFARIN,*3/*3,PM,Toxic,critical,Avoid warfarin or use very low dose with intensive INR monitoring.,heparin|dabigatran,A
+CYP2C9,WARFARIN,*1/*3,IM,Adjust Dosage,moderate,Reduce warfarin dose by 25-50%. Increase INR monitoring frequency.,none,A
+CYP2C9,WARFARIN,*1/*1,NM,Safe,none,Standard warfarin dose. Routine INR monitoring.,none,A
+CYP2C9,WARFARIN,*2/*2,PM,Toxic,high,Reduce warfarin dose significantly (50-60%). Close INR monitoring.,heparin|dabigatran,A
+CYP2C9,WARFARIN,*1/*2,IM,Adjust Dosage,low,Reduce warfarin dose by 10-25%. Increase INR monitoring.,none,A
+CYP2C9,WARFARIN,*2/*3,PM,Toxic,high,Significant dose reduction needed. Consider alternative anticoagulant.,heparin|dabigatran,A
+SLCO1B1,SIMVASTATIN,*5/*5,PM,Toxic,critical,Avoid simvastatin. Use rosuvastatin or pravastatin.,rosuvastatin|pravastatin,A
+SLCO1B1,SIMVASTATIN,*1/*5,IM,Adjust Dosage,moderate,Use lower dose simvastatin (20mg max) or switch to safer statin.,rosuvastatin|pravastatin,A
+SLCO1B1,SIMVASTATIN,*1/*1,NM,Safe,none,Standard simvastatin dose. Routine monitoring.,none,A
+SLCO1B1,SIMVASTATIN,*1a/*1b,NM,Safe,none,Standard simvastatin dose. No adjustment required.,none,B
+SLCO1B1,SIMVASTATIN,*5/*15,PM,Toxic,critical,Avoid simvastatin. High myopathy risk. Use alternative statin.,rosuvastatin|pravastatin,A
+SLCO1B1,SIMVASTATIN,*1/*15,IM,Adjust Dosage,moderate,Reduce simvastatin dose. Monitor for myopathy symptoms.,rosuvastatin|pravastatin,B
+TPMT,AZATHIOPRINE,*3A/*3A,PM,Toxic,critical,Avoid azathioprine/6-MP or use drastically reduced dose (10% of normal).,mycophenolate|ciclosporin,A
+TPMT,AZATHIOPRINE,*1/*3A,IM,Adjust Dosage,moderate,Start at 30-70% of standard dose. Monitor blood counts weekly.,none,A
+TPMT,AZATHIOPRINE,*1/*1,NM,Safe,none,Standard azathioprine dose. Routine monitoring.,none,A
+TPMT,AZATHIOPRINE,*3B/*3B,PM,Toxic,critical,Avoid azathioprine. Consider mycophenolate mofetil.,mycophenolate|ciclosporin,A
+TPMT,AZATHIOPRINE,*1/*3B,IM,Adjust Dosage,moderate,Reduce dose by 30-50%. Monitor hematologic toxicity closely.,none,A
+TPMT,AZATHIOPRINE,*3C/*3C,PM,Toxic,critical,Avoid azathioprine. Non-functional TPMT enzyme.,mycophenolate|ciclosporin,A
+TPMT,AZATHIOPRINE,*1/*3C,IM,Adjust Dosage,moderate,Reduce dose by 30-50%. Close blood count monitoring required.,none,A
+TPMT,AZATHIOPRINE,*2/*2,PM,Toxic,critical,Avoid azathioprine. Use alternative immunosuppressant.,mycophenolate|ciclosporin,A
+DPYD,FLUOROURACIL,*2A/*2A,PM,Toxic,critical,Contraindicated. Complete DPD deficiency. Use alternative chemotherapy.,capecitabine_reduced|tegafur_avoided,A
+DPYD,FLUOROURACIL,*1/*2A,IM,Toxic,high,Reduce dose by 50%. DPD partial deficiency increases severe toxicity.,capecitabine_reduced,A
+DPYD,FLUOROURACIL,*1/*1,NM,Safe,none,Standard 5-FU dose. No adjustment needed based on DPYD.,none,A
+DPYD,FLUOROURACIL,*13/*13,PM,Toxic,critical,Avoid fluorouracil. Complete DPD deficiency.,capecitabine_reduced|raltitrexed,A
+DPYD,FLUOROURACIL,*1/*13,IM,Adjust Dosage,high,Reduce starting dose by 50%. Monitor closely for toxicity.,none,A
+DPYD,FLUOROURACIL,rs67376798_het,IM,Adjust Dosage,moderate,Reduce dose by 25-50% based on DPD activity testing.,none,B
+CYP2D6,CODEINE,unknown,Unknown,Unknown,none,Insufficient genotype data. Standard dosing with monitoring.,none,C
+CYP2C19,CLOPIDOGREL,unknown,Unknown,Unknown,none,Insufficient genotype data. Standard dosing with monitoring.,none,C
+CYP2C9,WARFARIN,unknown,Unknown,Unknown,none,Insufficient genotype data. Standard dosing with INR monitoring.,none,C
+SLCO1B1,SIMVASTATIN,unknown,Unknown,Unknown,none,Insufficient genotype data. Standard dosing with monitoring.,none,C
+TPMT,AZATHIOPRINE,unknown,Unknown,Unknown,none,Insufficient genotype data. Standard dosing with CBC monitoring.,none,C
+DPYD,FLUOROURACIL,unknown,Unknown,Unknown,none,Insufficient genotype data. Consider DPD enzyme assay before treatment.,none,C

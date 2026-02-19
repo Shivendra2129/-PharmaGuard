@@ -1,0 +1,48 @@
+{
+    "patient_id": "PATIENT_001",
+    "drug": "CODEINE",
+    "timestamp": "2026-02-19T09:30:00Z",
+    "risk_assessment": {
+        "risk_label": "Ineffective",
+        "confidence_score": 0.88,
+        "severity": "high"
+    },
+    "pharmacogenomic_profile": {
+        "primary_gene": "CYP2D6",
+        "diplotype": "*4/*4",
+        "phenotype": "PM",
+        "detected_variants": [
+            {
+                "rsid": "rs3892097",
+                "chromosome": "chr22",
+                "position": 42522613
+            },
+            {
+                "rsid": "rs1065852",
+                "chromosome": "chr22",
+                "position": 42524946
+            }
+        ]
+    },
+    "clinical_recommendation": {
+        "cpic_guideline": "CPIC Guideline for CODEINE and CYP2D6",
+        "dose_adjustment": "Avoid codeine. Use non-CYP2D6-metabolized opioids.",
+        "alternative_drugs": [
+            "morphine",
+            "oxycodone"
+        ]
+    },
+    "llm_generated_explanation": {
+        "summary": "Your genetic profile shows you are a poor metabolizer of codeine due to your CYP2D6 *4/*4 genotype. This means codeine will not convert to morphine in your body, making it ineffective for pain relief. Your doctor should prescribe an alternative pain medication.",
+        "mechanism": "CYP2D6 encodes a hepatic cytochrome P450 enzyme that O-demethylates codeine to morphine (the active analgesic). The *4/*4 diplotype contains rs3892097, a splice-site variant that renders CYP2D6 non-functional. With absent CYP2D6 activity, codeine cannot be bioactivated, resulting in negligible morphine plasma concentrations and inadequate analgesia. CPIC (PMID: 22205192) recommends avoiding codeine in CYP2D6 poor metabolizers.",
+        "variant_citations": [
+            "rs3892097",
+            "rs1065852"
+        ]
+    },
+    "quality_metrics": {
+        "vcf_parsing_success": true,
+        "guideline_version": "CPIC v2.0",
+        "llm_confidence": 0.85
+    }
+}

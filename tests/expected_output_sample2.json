@@ -1,0 +1,41 @@
+{
+    "patient_id": "PATIENT_002",
+    "drug": "FLUOROURACIL",
+    "timestamp": "2026-02-19T09:30:00Z",
+    "risk_assessment": {
+        "risk_label": "Toxic",
+        "confidence_score": 0.93,
+        "severity": "high"
+    },
+    "pharmacogenomic_profile": {
+        "primary_gene": "DPYD",
+        "diplotype": "*1/*2A",
+        "phenotype": "IM",
+        "detected_variants": [
+            {
+                "rsid": "rs3918290",
+                "chromosome": "chr1",
+                "position": 97915614
+            }
+        ]
+    },
+    "clinical_recommendation": {
+        "cpic_guideline": "CPIC Guideline for FLUOROURACIL and DPYD",
+        "dose_adjustment": "Reduce dose by 50%. DPD partial deficiency increases severe toxicity.",
+        "alternative_drugs": [
+            "capecitabine_reduced"
+        ]
+    },
+    "llm_generated_explanation": {
+        "summary": "Your DPYD genetics show you cannot break down the chemotherapy drug fluorouracil (5-FU) as fast as most people. This puts you at serious risk of life-threatening side effects including mouth sores, low blood counts, and nerve damage at standard doses. A 50% dose reduction is required before starting treatment.",
+        "mechanism": "DPYD encodes dihydropyrimidine dehydrogenase, the rate-limiting enzyme responsible for catabolizing >80% of administered fluorouracil. The rs3918290 variant (IVS14+1G>A) creates a cryptic splice site, leading to exon 14 skipping and production of a truncated, non-functional DPD enzyme. In *1/*2A heterozygotes, residual DPD activity is ~50% of normal, resulting in markedly elevated 5-FU plasma concentrations and significantly increased risk of grade 3-4 toxicities including mucositis, neutropenia, and neurotoxicity. CPIC recommends 50% dose reduction and phenotyping confirmation.",
+        "variant_citations": [
+            "rs3918290"
+        ]
+    },
+    "quality_metrics": {
+        "vcf_parsing_success": true,
+        "guideline_version": "CPIC v2.0",
+        "llm_confidence": 0.85
+    }
+}
