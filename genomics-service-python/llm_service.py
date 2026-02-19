@@ -1,6 +1,6 @@
 """
 LLM Explanation Service.
-Uses OpenAI API to generate clinical explanations only.
+Uses Groq API (OpenAI-compatible) to generate clinical explanations only.
 Risk is pre-determined by the rule engine; LLM ONLY explains.
 """
 import os
@@ -11,8 +11,9 @@ from dotenv import load_dotenv
 
 load_dotenv(os.path.join(os.path.dirname(__file__), '..', '.env'))
 
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
-OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-4o")
+GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
+GROQ_MODEL = os.getenv("GROQ_MODEL", "llama-3.3-70b-versatile")
+GROQ_BASE_URL = "https://api.groq.com/openai/v1"
 
 CLINICAL_SYSTEM_PROMPT = """You are a senior clinical pharmacogenomics expert with deep knowledge of CPIC guidelines, pharmacokinetics, and precision medicine. Your role is to EXPLAIN a pre-determined drug risk assessment to clinicians and patients. You must:
 1. NOT modify or invent genotype, phenotype, or risk level — these are given to you
@@ -80,28 +81,35 @@ def generate_explanation(
     Generate LLM explanation for a pre-determined pharmacogenomic risk.
     Returns dict with summary, mechanism, variant_citations.
     """
-    if not OPENAI_API_KEY or OPENAI_API_KEY.startswith("sk-your"):
+    if not GROQ_API_KEY or GROQ_API_KEY.startswith("gsk_your"):
+        print("[LLMService] No Groq API key configured — using template explanation.")
         return _mock_explanation(gene, diplotype, phenotype, drug, risk_label, detected_variants)
     
     try:
-        client = OpenAI(api_key=OPENAI_API_KEY)
+        # Groq is OpenAI-compatible — just point to Groq's base URL
+        client = OpenAI(api_key=GROQ_API_KEY, base_url=GROQ_BASE_URL)
         prompt = build_explanation_prompt(
             gene, diplotype, phenotype, drug, risk_label,
             severity, detected_variants, cpic_recommendation
         )
         
         response = client.chat.completions.create(
-            model=OPENAI_MODEL,
+            model=GROQ_MODEL,
             messages=[
                 {"role": "system", "content": CLINICAL_SYSTEM_PROMPT},
                 {"role": "user", "content": prompt}
             ],
             temperature=0.2,  # Low temperature for factual clinical content
-            max_tokens=600,
-            response_format={"type": "json_object"}
+            max_tokens=600
+            # Note: response_format json_object not supported by all Groq models;
+            # the prompt instructs JSON-only output instead
         )
         
-        raw = response.choices[0].message.content
+        raw = response.choices[0].message.content or ""
+        # Strip any markdown code fences Groq may add
+        raw = raw.strip()
+        if raw.startswith("```"):
+            raw = raw.split("\n", 1)[-1].rsplit("```", 1)[0].strip()
         parsed = json.loads(raw)
         
         # Validate required fields
@@ -116,6 +124,7 @@ def generate_explanation(
         else:
             citations = []
         
+        print(f"[LLMService] Groq explanation generated via {GROQ_MODEL}")
         return {
             "summary": summary,
             "mechanism": mechanism,
@@ -124,14 +133,14 @@ def generate_explanation(
         }
     
     except Exception as e:
-        print(f"[LLMService] OpenAI call failed: {e}")
+        print(f"[LLMService] Groq call failed: {e}")
         return _mock_explanation(gene, diplotype, phenotype, drug, risk_label, detected_variants)
 
 
 def _mock_explanation(gene: str, diplotype: str, phenotype: str, drug: str,
                        risk_label: str, detected_variants: List[Dict]) -> Dict:
     """
-    Fallback explanation used when OpenAI API key is not configured.
+    Fallback explanation used when Groq API key is not configured.
     Provides deterministic, medically accurate template-based explanations.
     """
     rsids = [v.get('rsid', '') for v in detected_variants if v.get('rsid')]

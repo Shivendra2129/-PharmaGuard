@@ -1,0 +1,17 @@
+##fileformat=VCFv4.2
+##fileDate=20260220
+##source=GATK
+##reference=GRCh38
+##contig=<ID=1,length=248956422>
+##contig=<ID=7,length=159345973>
+##contig=<ID=10,length=133797422>
+##INFO=<ID=DP,Number=1,Type=Integer,Description="Total Depth">
+##INFO=<ID=AF,Number=A,Type=Float,Description="Allele Frequency">
+##FORMAT=<ID=GT,Number=1,Type=String,Description="Genotype">
+##FORMAT=<ID=DP,Number=1,Type=Integer,Description="Read Depth">
+##FORMAT=<ID=GQ,Number=1,Type=Integer,Description="Genotype Quality">
+#CHROM  POS       ID        REF  ALT  QUAL  FILTER  INFO            FORMAT        SAMPLE1
+1       55516888  rs429358  T    C    100   PASS    DP=120;AF=0.45  GT:DP:GQ      0/1:35:99
+1       55516915  rs7412    C    T    99    PASS    DP=110;AF=0.40  GT:DP:GQ      0/1:40:95
+7       140453136 rs121913529 G    A    200   PASS    DP=200;AF=0.50  GT:DP:GQ      1/1:60:99
+10      94761959  rs1065852  C    T    150   PASS    DP=180;AF=0.30  GT:DP:GQ      0/1:55:98

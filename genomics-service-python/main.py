@@ -239,5 +239,7 @@ async def get_supported_genes():
 if __name__ == "__main__":
     import uvicorn
     host = os.getenv("PYTHON_HOST", "0.0.0.0")
-    port = int(os.getenv("PYTHON_PORT", 8000))
-    uvicorn.run("main:app", host=host, port=port, reload=True)
+    # Render sets PORT; PYTHON_PORT is the local fallback
+    port = int(os.getenv("PORT", os.getenv("PYTHON_PORT", "8000")))
+    is_prod = os.getenv("PYTHON_ENV", "development") == "production"
+    uvicorn.run("main:app", host=host, port=port, reload=not is_prod)

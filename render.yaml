@@ -1,0 +1,37 @@
+services:
+  # ── Python FastAPI Genomics Service ───────────────────────────────────────
+  - type: web
+    name: pharmaguard-python
+    runtime: python
+    region: oregon
+    plan: free
+    rootDir: genomics-service-python
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: GROQ_API_KEY
+        sync: false          # Set manually in Render dashboard
+      - key: GROQ_MODEL
+        value: llama-3.3-70b-versatile
+      - key: PYTHON_ENV
+        value: production
+
+  # ── Node.js Backend ────────────────────────────────────────────────────────
+  - type: web
+    name: pharmaguard-node
+    runtime: node
+    region: oregon
+    plan: free
+    rootDir: backend-node
+    buildCommand: npm install
+    startCommand: node server.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: GENOMICS_SERVICE_URL
+        fromService:
+          name: pharmaguard-python
+          type: web
+          property: host
+      - key: CORS_ORIGINS
+        sync: false          # Set to your Vercel URL after deploying frontend
