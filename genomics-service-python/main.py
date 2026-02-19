@@ -26,6 +26,7 @@ from models import (
 from vcf_parser import parse_vcf
 from risk_engine import RiskEngine
 from llm_service import generate_explanation
+from groq_analyzer import groq_full_analysis
 
 app = FastAPI(
     title="PharmaGuard Genomics API",
@@ -139,81 +140,96 @@ async def analyze_vcf(
     # Parse VCF
     parse_result = parse_vcf(vcf_content, patient_id)
     
-    # Build response for each drug
+    # Convert parsed variants to plain dicts for Groq
+    variants_for_groq = [
+        {
+            "gene": v.gene or "",
+            "star_allele": v.star_allele or "",
+            "rsid": v.rsid or "",
+            "genotype": v.genotype or "",
+            "chromosome": v.chromosome or "",
+            "position": v.position or 0,
+        }
+        for v in parse_result.variants
+    ]
+
     results = []
     timestamp = make_timestamp()
     
     for drug in drug_list:
         drug_upper = drug.upper()
+        print(f"[Analyze] Running Groq full analysis for {drug_upper}...")
         
-        # Run deterministic risk assessment
-        assessment = risk_engine.assess(parse_result, drug_upper)
+        # Groq performs the COMPLETE analysis using CSV knowledge as prompt context
+        groq_result = groq_full_analysis(
+            drug=drug_upper,
+            variants=variants_for_groq,
+            patient_id=patient_id,
+            timestamp=timestamp
+        )
         
-        # Handle unsupported drug
-        if "error" in assessment:
+        # Handle Groq errors
+        if "error" in groq_result and "risk_assessment" not in groq_result:
             results.append({
                 "patient_id": patient_id,
                 "drug": drug_upper,
                 "timestamp": timestamp,
-                "error": assessment["error"],
-                "detail": assessment["detail"]
+                "error": groq_result["error"],
+                "detail": groq_result.get("detail", "Groq analysis failed")
             })
             continue
         
-        # Generate LLM explanation (explanation only, never risk decision)
-        llm_result = generate_explanation(
-            gene=assessment["primary_gene"],
-            diplotype=assessment["diplotype"],
-            phenotype=assessment["phenotype"],
-            drug=drug_upper,
-            risk_label=assessment["risk_label"],
-            severity=assessment["severity"],
-            detected_variants=assessment["detected_variants"],
-            cpic_recommendation=assessment["cpic_recommendation"]
-        )
-        
-        # Build strict schema response
-        response = PharmaGuardResponse(
-            patient_id=patient_id,
-            drug=drug_upper,
-            timestamp=timestamp,
-            risk_assessment=RiskAssessment(
-                risk_label=assessment["risk_label"],
-                confidence_score=assessment["confidence_score"],
-                severity=assessment["severity"]
-            ),
-            pharmacogenomic_profile=PharmacogenomicProfile(
-                primary_gene=assessment["primary_gene"],
-                diplotype=assessment["diplotype"],
-                phenotype=assessment["phenotype"],
-                detected_variants=[
-                    DetectedVariant(
-                        rsid=v["rsid"],
-                        chromosome=v["chromosome"],
-                        position=v["position"]
-                    )
-                    for v in assessment["detected_variants"]
-                ]
-            ),
-            clinical_recommendation=ClinicalRecommendation(
-                cpic_guideline=f"CPIC Guideline for {drug_upper} and {assessment['primary_gene']}",
-                dose_adjustment=assessment["cpic_recommendation"],
-                alternative_drugs=assessment["alternative_drugs"]
-            ),
-            llm_generated_explanation=LLMGeneratedExplanation(
-                summary=llm_result.get("summary", ""),
-                mechanism=llm_result.get("mechanism", ""),
-                variant_citations=llm_result.get("variant_citations", [])
-            ),
-            quality_metrics=QualityMetrics(
-                vcf_parsing_success=assessment["vcf_parsing_success"],
-                guideline_version="CPIC v2.0",
-                llm_confidence=llm_result.get("llm_confidence", 0.75)
+        # Validate and build the PharmaGuardResponse from Groq output
+        try:
+            ra = groq_result.get("risk_assessment", {})
+            pp = groq_result.get("pharmacogenomic_profile", {})
+            cr = groq_result.get("clinical_recommendation", {})
+            le = groq_result.get("llm_generated_explanation", {})
+            qm = groq_result.get("quality_metrics", {})
+
+            response = PharmaGuardResponse(
+                patient_id=patient_id,
+                drug=drug_upper,
+                timestamp=timestamp,
+                risk_assessment=RiskAssessment(
+                    risk_label=ra.get("risk_label", "Unknown"),
+                    confidence_score=float(ra.get("confidence_score", 0.75)),
+                    severity=ra.get("severity", "moderate")
+                ),
+                pharmacogenomic_profile=PharmacogenomicProfile(
+                    primary_gene=pp.get("primary_gene", "Unknown"),
+                    diplotype=pp.get("diplotype", "unknown"),
+                    phenotype=pp.get("phenotype", "Unknown"),
+                    detected_variants=[
+                        DetectedVariant(
+                            rsid=v.get("rsid", ""),
+                            chromosome=v.get("chromosome", ""),
+                            position=int(v.get("position", 0))
+                        )
+                        for v in pp.get("detected_variants", [])
+                    ]
+                ),
+                clinical_recommendation=ClinicalRecommendation(
+                    cpic_guideline=cr.get("cpic_guideline", f"CPIC Guideline for {drug_upper}"),
+                    dose_adjustment=cr.get("dose_adjustment", "Consult your pharmacist."),
+                    alternative_drugs=cr.get("alternative_drugs", [])
+                ),
+                llm_generated_explanation=LLMGeneratedExplanation(
+                    summary=le.get("summary", ""),
+                    mechanism=le.get("mechanism", ""),
+                    variant_citations=le.get("variant_citations", [])
+                ),
+                quality_metrics=QualityMetrics(
+                    vcf_parsing_success=True,
+                    guideline_version="CPIC v2.0",
+                    llm_confidence=float(qm.get("llm_confidence", 0.85))
+                )
             )
-        )
-        
-        results.append(response.model_dump())
-    
+            results.append(response.model_dump())
+        except Exception as e:
+            print(f"[Analyze] Schema validation error: {e}")
+            results.append(groq_result)
+
     return JSONResponse(content=results)
 
 
